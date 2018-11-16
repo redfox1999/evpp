@@ -84,8 +84,8 @@ void WsConnection::onError()
 ret = func(data + readLen, count - readLen); \
 readLen += (ret > 0 ? ret : 0); 
 
-// ssize_t WsConnection::onRead(const ConnectionPtr_t& conn, const char* data, size_t count)
-// {
+ssize_t WsConnection::onRead(const evpp::TCPConnPtr& conn, evpp::Buffer* buffer)
+{
 //     size_t readLen = 0;
 //     ssize_t ret = 1;
 
@@ -137,7 +137,7 @@ readLen += (ret > 0 ? ret : 0);
 //     }
     
 //     return ret;
-// }
+}
 
 ssize_t WsConnection::onFrameStart(const char* data, size_t count)
 {

@@ -54,6 +54,8 @@ namespace xhttp {
         //ConnectionPtr_t lockConn() { return m_conn.lock(); }
         //WeakConnectionPtr_t getConn() { return m_conn; }
 
+        evpp::TCPConnPtr getTcpConn() { return m_conn.lock(); }
+
         static void setMaxHeaderSize(size_t size) { ms_maxHeaderSize = size; }
         static void setMaxBodySize(size_t size) { ms_maxBodySize = size; }
         

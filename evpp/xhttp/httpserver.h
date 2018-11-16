@@ -45,6 +45,9 @@ namespace xhttp {
         void setHttpDefaultCallback(const HttpCallback_t& callback);
 
         void setHttpCallback(const std::string& path, const HttpCallback_t& callback, const AuthCallback_t& auth);
+
+        void setWsCallback(const std::string& path, const WsCallback_t& callback);
+        void setWsCallback(const std::string& path, const WsCallback_t& callback, const AuthCallback_t& auth);
     protected:
         void onTcpConnectionCallback(const TCPConnPtr& conn);
         void onTcpMessageCallback(const TCPConnPtr&, evpp::Buffer*);
@@ -65,6 +68,8 @@ namespace xhttp {
         std::map<std::string, HttpCallback_t> m_httpCallbacks;  
         HttpCallback_t m_defaultCallback;  
         std::map<std::string, AuthCallback_t> m_authCallbacks;    
+
+        std::map<std::string, WsCallback_t> m_wsCallbacks;
 
     };
     

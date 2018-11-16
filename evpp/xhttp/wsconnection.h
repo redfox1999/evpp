@@ -48,7 +48,7 @@ private:
     void onOpen(const void* context);
     void onError();
             
-    //ssize_t onRead(const ConnectionPtr_t& conn, const char* data, size_t count);
+    ssize_t onRead(const evpp::TCPConnPtr& conn, evpp::Buffer* buffer);
 
     bool isFinalFrame() { return m_final; }
     bool isMaskFrame() { return m_mask; }

@@ -11,6 +11,8 @@
 #include "httprequest.h"
 #include "httpresponse.h"
 #include "httpparser.h"
+#include "wsconnection.h"
+#include "wsutil.h"
 
 
 
@@ -107,7 +109,11 @@ namespace xhttp {
         if (httpConn)
             httpConn->onDataReceived(conn, buffer);
         else {
-            LOG_ERROR << "HttpServer OnData Not HttpConnection?";
+            WsConnectionPtr_t wsConn = evpp::any_cast<WsConnectionPtr_t>(conn->context());
+            if (wsConn)
+                wsConn->onRead(conn, buffer);
+            else 
+                LOG_ERROR << "HttpServer OnData Not HttpConnection?";
         }
     }
 
@@ -147,7 +153,43 @@ namespace xhttp {
 
 
     void HttpServer::onWebSocket(const HttpConnectionPtr_t& conn, const HttpRequest& request, evpp::Buffer* buffer) {
+        std::map<string, WsCallback_t>::iterator iter = m_wsCallbacks.find(request.path);
+        if(iter == m_wsCallbacks.end())         {
+            //onHttpRequestError(conn, request, 404);
+            // TODO:  404 ....
+        }
+        else
+        {
+            if(!authRequest(conn, request))  {
+                return;
+            }
 
+            evpp::TCPConnPtr c = conn->getTcpConn();
+            if(!c) {
+                return;    
+            }
+
+            WsConnectionPtr_t wsConn(new WsConnection(c, iter->second));
+
+            HttpResponse resp;
+            HttpError error = WsUtil::handshake(request, resp); 
+
+            if(error.statusCode != 200)
+            {
+                onHttpRequestError(conn, request, error);
+                return;
+            }
+
+            c->Send(resp.dump());
+
+            wsConn->onOpen(&request);
+
+            wsConn->onRead(c, buffer);
+            //c->setEventCallback(std::bind(&WsConnection::onConnEvent, wsConn, _1, _2, _3));
+            c->set_context(evpp::Any(wsConn));
+
+            return;
+        }
     }
 
     void HttpServer::setHttpDefaultCallback(const HttpCallback_t& callback) {
@@ -161,6 +203,16 @@ namespace xhttp {
 
     void HttpServer::setHttpCallback(const std::string& path, const HttpCallback_t& callback, const AuthCallback_t& auth) {
         setHttpCallback(path, callback);
+
+        m_authCallbacks[path] = auth;
+    }
+
+    void HttpServer::setWsCallback(const std::string& path, const WsCallback_t& callback) {
+        m_wsCallbacks[path] = callback;
+    }
+
+    void HttpServer::setWsCallback(const std::string& path, const WsCallback_t& callback, const AuthCallback_t& auth) {
+        setWsCallback(path, callback);
 
         m_authCallbacks[path] = auth;
     }

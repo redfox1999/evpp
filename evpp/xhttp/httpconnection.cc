@@ -30,7 +30,7 @@ namespace xhttp {
 
     HttpConnection::~HttpConnection()
     {
-        
+        m_conn.reset();
     }
 
     void HttpConnection::onDataReceived(const TCPConnPtr& conn, evpp::Buffer* buffer) {
