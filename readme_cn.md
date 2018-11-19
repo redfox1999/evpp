@@ -1,3 +1,11 @@
+fork from https://github.com/Qihoo360/evpp
+
+修改添加了一套新的 httpserver代码，实现一个 websocket
+
+从 https://github.com/siddontang/libtnet 移植的代码
+
+---
+
 evpp
 ---
 

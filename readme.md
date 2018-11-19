@@ -1,3 +1,12 @@
+
+fork from https://github.com/Qihoo360/evpp
+
+add new httpserver and websocket
+
+copy from https://github.com/siddontang/libtnet
+
+---
+
 evpp 
 ---
 
