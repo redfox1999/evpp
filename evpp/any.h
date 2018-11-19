@@ -132,7 +132,7 @@ const ValueType* any_cast(const Any* any) {
 template<typename ValueType>
 ValueType any_cast(const Any& any) {
     const ValueType* result = any_cast<ValueType>(&any);
-    assert(result);
+    //assert(result);
 
     if (!result) {
         return ValueType();

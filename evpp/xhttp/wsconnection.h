@@ -42,13 +42,16 @@ public:
 
     static void setMaxPayloadLen(size_t len) { ms_maxPayloadLen = len; }
 
-private:    
+protected:    
     //void onConnEvent(const ConnectionPtr_t& conn, ConnEvent event, const void*);
 
     void onOpen(const void* context);
     void onError();
             
     ssize_t onRead(const evpp::TCPConnPtr& conn, evpp::Buffer* buffer);
+    void onWriteComplete(const TCPConnPtr&);
+
+private:
 
     bool isFinalFrame() { return m_final; }
     bool isMaskFrame() { return m_mask; }
@@ -65,8 +68,8 @@ private:
     ssize_t onFrameData(const char* data, size_t count);
 
     ssize_t handleFramePayloadLen(size_t payloadLen);
-    //ssize_t handleFrameData(const ConnectionPtr_t& conn);
-    //ssize_t handleMessage(const ConnectionPtr_t& conn, uint8_t opcode, const std::string& message);
+    ssize_t handleFrameData(const evpp::TCPConnPtr& conn);
+    ssize_t handleMessage(const evpp::TCPConnPtr& conn, uint8_t opcode, const std::string& message);
     ssize_t tryRead(const char* data, size_t count, size_t tryReadData);
 
     void sendFrame(bool finalFrame, char opcode, const std::string& message = std::string());
@@ -84,7 +87,7 @@ private:
         FrameError,
     }; 
     
-    //WeakConnectionPtr_t m_conn;
+    std::weak_ptr<evpp::TCPConn> m_conn;
 
     size_t m_payloadLen;
 
